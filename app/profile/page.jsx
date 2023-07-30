@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import { useRouter } from 'next/navigation';
 
+import Head from 'next/head';
 import Profile from '@components/Profile';
 
 const MyProfile = () => {
@@ -50,11 +51,11 @@ const MyProfile = () => {
 
   return (
     <Profile
-      name="My"
-      desc="Welcome to your personalized profile page"
-      posts={posts}
-      handleEdit={handleEdit}
-      handleDelete={handleDelete}
+    name="My"
+    desc="Welcome to your personalized profile page"
+    posts={posts}
+    handleEdit={handleEdit}
+    handleDelete={handleDelete}
     />
   );
 };
