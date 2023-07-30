@@ -10,7 +10,6 @@ const PromptCard = (props) => {
   const { post, handleProfileClick, handleTagClick, handleEdit, handleDelete } = props;
   const { data: session } = useSession();
   const pathName = usePathname();
-  const router = useRouter();
   
   const [copied, setCopied] = useState("");
 
@@ -65,7 +64,7 @@ const PromptCard = (props) => {
       <p className='font-inter text-sm blue_gradient cursor-pointer'
         onClick={() => handleTagClick && handleTagClick(post.tag)}
       >
-        {post.tag}
+        #{post.tag}
       </p>
 
       {session?.user.id === post.creator._id && pathName === "/profile" && (

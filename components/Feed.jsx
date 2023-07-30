@@ -7,7 +7,7 @@ import { useSession } from 'next-auth/react';
 import PromptCard from './PromptCard';
 
 const PromptCardList = (props) => {
-  const { posts, handleProfileClick, handleTagLick } = props;
+  const { posts, handleProfileClick, handleTagClick } = props;
   
   return (
     <div className='mt-16 prompt_layout'>
@@ -16,7 +16,7 @@ const PromptCardList = (props) => {
           key={post._id}
           post={post}
           handleProfileClick={handleProfileClick}
-          handleTagLick={handleTagLick}
+          handleTagClick={handleTagClick}
         />
       ))}
     </div>
@@ -25,8 +25,13 @@ const PromptCardList = (props) => {
 
 const Feed = () => {
   const { data: session } = useSession();
+  const [allPosts, setAllPosts] = useState([]);
+
+  // Search states
   const [searchText, setSearchText] = useState("");
-  const [posts, setPosts] = useState([]);
+  const [searchTimeout, setSearchTimeout] = useState(null);
+  const [searchedResults, setSearchedResults] = useState([]);
+  const [firstLoad, setFirstLoad] = useState(true);
 
   const router = useRouter();
 
@@ -38,20 +43,47 @@ const Feed = () => {
     }
   }
 
-  const handleSearchChange = (e) => {
-    
-  }
+  const fetchPosts = async () => {
+    const response = await fetch('/api/prompt');
+    const data = await response.json();
+
+    setAllPosts(data)
+  };
 
   useEffect(() => {
-    const fetchPosts = async () => {
-      const response = await fetch('/api/prompt');
-      const data = await response.json();
-
-      setPosts(data)
-    }
-
     fetchPosts();
   }, []);
+
+  const filterPrompts = (searchtext) => {
+    const regex = new RegExp(searchtext, "i");
+    return allPosts.filter(
+      (item) => 
+      regex.test(item.creator.username) ||
+      regex.test(item.tag) ||
+      regex.test(item.prompt)
+    );
+  };
+
+  const handleSearchChange = (e) => {
+    clearTimeout(searchTimeout);
+    setSearchText(e.target.value);
+    setFirstLoad(false);
+
+    setSearchTimeout(
+      setTimeout(() => {
+        const searchResult = filterPrompts(e.target.value);
+        setSearchedResults(searchResult);
+      }, 500)
+    );
+  };
+
+  const handleTagClick = (tag) => {
+    setSearchText(tag);
+    setFirstLoad(false);
+
+    const searchResult = filterPrompts(tagName);
+    setSearchedResults(searchResult);
+  }
 
   return (
     <section className="feed">
@@ -67,9 +99,9 @@ const Feed = () => {
       </form>
 
       <PromptCardList
-        posts={posts}
+        posts={firstLoad ? allPosts : searchedResults}
         handleProfileClick={handleProfileClick}
-        handleTagLick={() => {}}
+        handleTagClick={handleTagClick}
       />
     </section>
   );
