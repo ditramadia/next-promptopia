@@ -6,21 +6,15 @@ import PromptCard from './PromptCard';
 
 const PromptCardList = (props) => {
   const { posts, handleTagLick } = props;
-
-  console.log(Array.isArray(posts));
-  console.log("POSTS: " + posts.length);
-  console.log(posts);
   
   return (
     <div className='mt-16 prompt_layout'>
       {posts.map((post) => (
-        <>
-          <PromptCard
-            key={post._id}
-            post={post}
-            handleTagLick={handleTagLick}
-          />
-        </>
+        <PromptCard
+          key={post._id}
+          post={post}
+          handleTagLick={handleTagLick}
+        />
       ))}
     </div>
   );
